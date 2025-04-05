@@ -360,8 +360,9 @@ void CImageProcessingDoc::OnSubConstant()
 
 	if (dlg.DoModal() == IDOK) {
 		for (i = 0; i < m_size; i++) {
-			if (m_InputImage[i] - dlg.m_Constant < 0)
+			if (m_InputImage[i] - dlg.m_Constant < 0) // 클램핑(clamping)
 				m_OutputImage[i] = 0; // 출력 값이 255보다 크면 255를 출력
+				
 			else
 				m_OutputImage[i] = (unsigned char)(m_InputImage[i] - dlg.m_Constant);
 			// 상수 값과 화소 값과의 뺄셈
@@ -380,11 +381,11 @@ void CImageProcessingDoc::OnMulConstant()
 	m_Re_height = m_height;
 	m_Re_width = m_width;
 	m_Re_size = m_Re_height * m_Re_width;
-
 	m_OutputImage = new unsigned char[m_Re_size];
 
 	if (dlg.DoModal() == IDOK) {
 		for (i = 0; i < m_size; i++) {
+			// clamping 기법
 			if (m_InputImage[i] * dlg.m_Constant > 255)
 				m_OutputImage[i] = 255;
 			// 곱의 값이 255보다 크면 255를 출력
@@ -410,11 +411,11 @@ void CImageProcessingDoc::OnDivConstant()
 	m_Re_height = m_height;
 	m_Re_width = m_width;
 	m_Re_size = m_Re_height * m_Re_width;
-
 	m_OutputImage = new unsigned char[m_Re_size];
 
 	if (dlg.DoModal() == IDOK) {
 		for (i = 0; i < m_size; i++) {
+			// clamping 기법
 			if (m_InputImage[i] / dlg.m_Constant > 255)
 				m_OutputImage[i] = 255;
 			// 나눗셈의 값이 255보다 크면 255를 출력
@@ -439,7 +440,6 @@ void CImageProcessingDoc::OnAndOperate()
 	m_Re_height = m_height;
 	m_Re_width = m_width;
 	m_Re_size = m_Re_height * m_Re_width;
-
 	m_OutputImage = new unsigned char[m_Re_size];
 
 	if (dlg.DoModal() == IDOK) {
