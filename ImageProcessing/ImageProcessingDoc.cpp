@@ -46,6 +46,10 @@ BEGIN_MESSAGE_MAP(CImageProcessingDoc, CDocument)
 	ON_COMMAND(ID_GAMMA_CORRECTION, &CImageProcessingDoc::OnGammaCorrection)
 	ON_COMMAND(ID_BINARIZAITON, &CImageProcessingDoc::OnBinarizaiton)
 	ON_COMMAND(ID_STRESS_TRANSFORM, &CImageProcessingDoc::OnStressTransform)
+	ON_COMMAND(ID_HISTO_STRETCH, &CImageProcessingDoc::OnHistoStretch)
+	ON_COMMAND(ID_END_IN_SEARCH, &CImageProcessingDoc::OnEndInSearch)
+	ON_COMMAND(ID_HISTOGRAM, &CImageProcessingDoc::OnHistogram)
+	ON_COMMAND(ID_HISTO_EQUAL, &CImageProcessingDoc::OnHistoEqual)
 END_MESSAGE_MAP()
 
 
@@ -615,4 +619,167 @@ void CImageProcessingDoc::OnStressTransform()
 		}
 	}
 
+}
+
+void CImageProcessingDoc::OnHistoStretch()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	int i;
+	unsigned char LOW, HIGH, MAX, MIN;
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+	LOW = 0;
+	HIGH = 255;
+	MIN = m_InputImage[0]; // 최소값을찾기위한초기값
+	MAX = m_InputImage[0]; // 최대값을찾기위한초기값
+	// 입력영상의최소값찾기
+	for (i = 0; i < m_size; i++) {
+		if (m_InputImage[i] < MIN)
+			MIN = m_InputImage[i];
+	}
+	// 입력영상의최대값찾기
+	for (i = 0; i < m_size; i++) {
+		if (m_InputImage[i] > MAX)
+			MAX = m_InputImage[i];
+	}
+	m_OutputImage = new unsigned char[m_Re_size];
+	// 히스토그램stretch
+	for (i = 0; i < m_size; i++)
+		m_OutputImage[i] = (unsigned char)((m_InputImage[i] -
+		MIN) * HIGH / (MAX - MIN));
+}
+
+void CImageProcessingDoc::OnEndInSearch()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	int i;
+	unsigned char LOW, HIGH, MAX, MIN;
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+	LOW = 0;
+	HIGH = 255;
+	MIN = m_InputImage[0];
+	MAX = m_InputImage[0];
+	for (i = 0; i < m_size; i++) {
+		if (m_InputImage[i] < MIN)
+			MIN = m_InputImage[i];
+	}
+	for (i = 0; i < m_size; i++) {
+		if (m_InputImage[i] > MAX)
+			MAX = m_InputImage[i];
+	}
+	m_OutputImage = new unsigned char[m_Re_size];
+	for (i = 0; i < m_size; i++) {
+		// 원본영상의최소값보다작은값은0
+		if (m_InputImage[i] <= MIN) {
+			m_OutputImage[i] = 0;
+		}
+		// 원본영상의최대값보다큰값은255
+		else if (m_InputImage[i] >= MAX) {
+			m_OutputImage[i] = 255;
+		}
+		else
+			m_OutputImage[i] = (unsigned char)((m_InputImage[i] -
+			MIN) * HIGH / (MAX - MIN));
+	}
+}
+
+double m_HIST[256];
+double m_Sum_Of_HIST[256];
+unsigned char m_Scale_HIST[256];
+
+void CImageProcessingDoc::OnHistogram()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	// 히스토그램의값은0~255
+ // 히스토그램의크기값을MAX=255로정규화하여출력
+// 히스트그램의크기: 256*256 지정
+	int i, j, value;
+	unsigned char LOW, HIGH;
+	double MAX, MIN, DIF;
+	m_Re_height = 256;
+	m_Re_width = 256;
+	m_Re_size = m_Re_height * m_Re_width;
+	LOW = 0;
+	HIGH = 255;
+	// 초기화
+	for (i = 0; i < 256; i++)
+		m_HIST[i] = LOW;
+	// 빈도수조사
+	for (i = 0; i < m_size; i++) {
+		value = (int)m_InputImage[i];
+		m_HIST[value]++;
+	}
+	// 정규화
+	MAX = m_HIST[0];
+	MIN = m_HIST[0];
+	for (i = 0; i < 256; i++) {
+		if (m_HIST[i] > MAX)
+			MAX = m_HIST[i];
+	}
+	for (i = 0; i < 256; i++) {
+		if (m_HIST[i] < MIN)
+			MIN = m_HIST[i];
+	}
+	DIF = MAX - MIN;
+	// 정규화된히스토그램
+	for (i = 0; i < 256; i++)
+		m_Scale_HIST[i] = (unsigned char)((m_HIST[i] - MIN) * HIGH / DIF);
+	// 정규화된히스토그램출력
+	m_OutputImage = new unsigned char[m_Re_size + (256 * 20)];
+	for (i = 0; i < m_Re_size; i++)
+		m_OutputImage[i] = 255;
+	// 정규화된히스토그램의값은출력배열에검은점(0)으로표현
+	for (i = 0; i < 256; i++) {
+		for (j = 0; j < m_Scale_HIST[i]; j++) {
+			m_OutputImage[m_Re_width * (m_Re_height - j - 1) + i] = 0;
+		}
+	}
+	// 히스토그램을출력하고그아래부분에히스토그램의색을표시
+	for (i = m_Re_height; i < m_Re_height + 5; i++) {
+		for (j = 0; j < 256; j++) {
+			m_OutputImage[m_Re_height * i + j] = 255;
+		}
+	}
+	for (i = m_Re_height + 5; i < m_Re_height + 20; i++) {
+		for (j = 0; j < 256; j++) {
+			m_OutputImage[m_Re_height * i + j] = j;
+		}
+	}
+	m_Re_height = m_Re_height + 20;
+	m_Re_size = m_Re_height * m_Re_width;
+}
+
+void CImageProcessingDoc::OnHistoEqual()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	int i, value;
+	unsigned char LOW, HIGH, Temp;
+	double SUM = 0.0;
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+	LOW = 0;
+	HIGH = 255;
+	// 초기화
+	for (i = 0; i < 256; i++)
+		m_HIST[i] = LOW;
+	// 빈도수조사
+	for (i = 0; i < m_size; i++) {
+		value = (int)m_InputImage[i];
+		m_HIST[value]++;
+	}
+	// 누적히스토그램생성
+	for (i = 0; i < 256; i++) {
+		SUM += m_HIST[i];
+		m_Sum_Of_HIST[i] = SUM;
+	}
+	m_OutputImage = new unsigned char[m_Re_size];
+	// 입력영상을평활화된영상으로출력
+	for (i = 0; i < m_size; i++) {
+		Temp = m_InputImage[i];
+		m_OutputImage[i] = (unsigned char)(m_Sum_Of_HIST[Temp] * HIGH / m_size);
+	}
 }

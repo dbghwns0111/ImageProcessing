@@ -70,4 +70,8 @@ public:
 	afx_msg void OnGammaCorrection();
 	afx_msg void OnBinarizaiton();
 	afx_msg void OnStressTransform();
+	afx_msg void OnHistoStretch();
+	afx_msg void OnEndInSearch();
+	afx_msg void OnHistogram();
+	afx_msg void OnHistoEqual();
 };

@@ -41,6 +41,10 @@ BEGIN_MESSAGE_MAP(CImageProcessingView, CView)
 	ON_COMMAND(ID_GAMMA_CORRECTION, &CImageProcessingView::OnGammaCorrection)
 	ON_COMMAND(ID_BINARIZAITON, &CImageProcessingView::OnBinarizaiton)
 	ON_COMMAND(ID_STRESS_TRANSFORM, &CImageProcessingView::OnStressTransform)
+	ON_COMMAND(ID_HISTO_STRETCH, &CImageProcessingView::OnHistoStretch)
+	ON_COMMAND(ID_END_IN_SEARCH, &CImageProcessingView::OnEndInSearch)
+	ON_COMMAND(ID_HISTOGRAM, &CImageProcessingView::OnHistogram)
+	ON_COMMAND(ID_HISTO_EQUAL, &CImageProcessingView::OnHistoEqual)
 END_MESSAGE_MAP()
 
 // CImageProcessingView 생성/소멸
@@ -301,4 +305,40 @@ void CImageProcessingView::OnStressTransform()
 
 	Invalidate(TRUE);
 
+}
+
+void CImageProcessingView::OnHistoStretch()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	pDoc->OnHistoStretch();
+	Invalidate(TRUE);
+}
+
+void CImageProcessingView::OnEndInSearch()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	pDoc->OnEndInSearch();
+	Invalidate(TRUE);
+}
+
+void CImageProcessingView::OnHistogram()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	pDoc->OnHistogram();
+	Invalidate(TRUE);
+}
+
+void CImageProcessingView::OnHistoEqual()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	pDoc->OnHistoEqual();
+	Invalidate(TRUE);
 }
