@@ -54,13 +54,14 @@
 #define ID_END_IN_SEARCH                32808
 #define ID_HISTOGRAM                    32809
 #define ID_HISTO_EQUAL                  32810
+#define ID_32811                        32811
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        320
-#define _APS_NEXT_COMMAND_VALUE         32811
+#define _APS_NEXT_COMMAND_VALUE         32812
 #define _APS_NEXT_CONTROL_VALUE         1002
 #define _APS_NEXT_SYMED_VALUE           310
 #endif

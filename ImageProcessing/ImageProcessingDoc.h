@@ -74,4 +74,5 @@ public:
 	afx_msg void OnEndInSearch();
 	afx_msg void OnHistogram();
 	afx_msg void OnHistoEqual();
+	afx_msg void On32811();
 };

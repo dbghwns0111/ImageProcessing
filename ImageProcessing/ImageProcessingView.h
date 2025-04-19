@@ -59,6 +59,7 @@ public:
 	afx_msg void OnEndInSearch();
 	afx_msg void OnHistogram();
 	afx_msg void OnHistoEqual();
+	afx_msg void On32811();
 };
 
 #ifndef _DEBUG  // ImageProcessingView.cpp의 디버그 버전

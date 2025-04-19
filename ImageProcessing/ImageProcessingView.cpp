@@ -45,6 +45,7 @@ BEGIN_MESSAGE_MAP(CImageProcessingView, CView)
 	ON_COMMAND(ID_END_IN_SEARCH, &CImageProcessingView::OnEndInSearch)
 	ON_COMMAND(ID_HISTOGRAM, &CImageProcessingView::OnHistogram)
 	ON_COMMAND(ID_HISTO_EQUAL, &CImageProcessingView::OnHistoEqual)
+	ON_COMMAND(ID_32811, &CImageProcessingView::On32811)
 END_MESSAGE_MAP()
 
 // CImageProcessingView 생성/소멸
@@ -340,5 +341,14 @@ void CImageProcessingView::OnHistoEqual()
 	CImageProcessingDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	pDoc->OnHistoEqual();
+	Invalidate(TRUE);
+}
+
+void CImageProcessingView::On32811()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	pDoc->On32811();
 	Invalidate(TRUE);
 }
