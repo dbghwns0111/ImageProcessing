@@ -366,7 +366,7 @@ void CImageProcessingDoc::OnSubConstant()
 	if (dlg.DoModal() == IDOK) {
 		for (i = 0; i < m_size; i++) {
 			if (m_InputImage[i] - dlg.m_Constant < 0) // 클램핑(clamping)
-				m_OutputImage[i] = 0; // 출력 값이 255보다 크면 255를 출력
+				m_OutputImage[i] = 0; // 출력 값이 0보다 작으면 0를 출력
 				
 			else
 				m_OutputImage[i] = (unsigned char)(m_InputImage[i] - dlg.m_Constant);
