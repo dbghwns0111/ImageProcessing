@@ -74,5 +74,15 @@ public:
 	afx_msg void OnEndInSearch();
 	afx_msg void OnHistogram();
 	afx_msg void OnHistoEqual();
-	afx_msg void On32811();
+	afx_msg void OnHistoSpec();
+	void OnEmbossing();
+	double** OnMaskProcess(unsigned char* Target, double Mask[3][3]);
+	double** OnScale(double** Target, int height, int width);
+	double** Image2DMem(int height, int width);
+	double** m_tempImage;
+	afx_msg void OnBlurr();
+	afx_msg void OnGaussianFilter();
+	afx_msg void OnSharpening();
+	afx_msg void OnHpfSharp();
+	afx_msg void OnLpfSharp();
 };

@@ -45,7 +45,13 @@ BEGIN_MESSAGE_MAP(CImageProcessingView, CView)
 	ON_COMMAND(ID_END_IN_SEARCH, &CImageProcessingView::OnEndInSearch)
 	ON_COMMAND(ID_HISTOGRAM, &CImageProcessingView::OnHistogram)
 	ON_COMMAND(ID_HISTO_EQUAL, &CImageProcessingView::OnHistoEqual)
-	ON_COMMAND(ID_32811, &CImageProcessingView::On32811)
+	ON_COMMAND(ID_HISTO_SPEC, &CImageProcessingView::OnHistoSpec)
+	ON_COMMAND(ID_EMBOSSING, &CImageProcessingView::OnEmbossing)
+	ON_COMMAND(ID_BLURR, &CImageProcessingView::OnBlurr)
+	ON_COMMAND(ID_GAUSSIAN_FILTER, &CImageProcessingView::OnGaussianFilter)
+	ON_COMMAND(ID_SHARPENING, &CImageProcessingView::OnSharpening)
+	ON_COMMAND(ID_HPF_SHARP, &CImageProcessingView::OnHpfSharp)
+	ON_COMMAND(ID_LPF_SHARP, &CImageProcessingView::OnLpfSharp)
 END_MESSAGE_MAP()
 
 // CImageProcessingView 생성/소멸
@@ -344,11 +350,66 @@ void CImageProcessingView::OnHistoEqual()
 	Invalidate(TRUE);
 }
 
-void CImageProcessingView::On32811()
+void CImageProcessingView::OnHistoSpec()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	CImageProcessingDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	pDoc->On32811();
+	pDoc->OnHistoSpec();
+	Invalidate(TRUE);
+}
+
+
+void CImageProcessingView::OnEmbossing()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	pDoc->OnEmbossing();
+	Invalidate(TRUE);
+}
+
+void CImageProcessingView::OnBlurr()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	pDoc->OnBlurr();
+	Invalidate(TRUE);
+}
+
+void CImageProcessingView::OnGaussianFilter()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	pDoc->OnGaussianFilter();
+	Invalidate(TRUE);
+}
+
+void CImageProcessingView::OnSharpening()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	pDoc->OnSharpening();
+	Invalidate(TRUE);
+}
+
+void CImageProcessingView::OnHpfSharp()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	pDoc->OnHpfSharp();
+	Invalidate(TRUE);
+}
+
+void CImageProcessingView::OnLpfSharp()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CImageProcessingDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);
+	pDoc->OnLpfSharp();
 	Invalidate(TRUE);
 }

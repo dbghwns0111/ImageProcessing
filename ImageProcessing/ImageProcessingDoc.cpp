@@ -50,7 +50,12 @@ BEGIN_MESSAGE_MAP(CImageProcessingDoc, CDocument)
 	ON_COMMAND(ID_END_IN_SEARCH, &CImageProcessingDoc::OnEndInSearch)
 	ON_COMMAND(ID_HISTOGRAM, &CImageProcessingDoc::OnHistogram)
 	ON_COMMAND(ID_HISTO_EQUAL, &CImageProcessingDoc::OnHistoEqual)
-	ON_COMMAND(ID_32811, &CImageProcessingDoc::On32811)
+	ON_COMMAND(ID_HISTO_SPEC, &CImageProcessingDoc::OnHistoSpec)
+	ON_COMMAND(ID_BLURR, &CImageProcessingDoc::OnBlurr)
+	ON_COMMAND(ID_GAUSSIAN_FILTER, &CImageProcessingDoc::OnGaussianFilter)
+	ON_COMMAND(ID_SHARPENING, &CImageProcessingDoc::OnSharpening)
+	ON_COMMAND(ID_HPF_SHARP, &CImageProcessingDoc::OnHpfSharp)
+	ON_COMMAND(ID_LPF_SHARP, &CImageProcessingDoc::OnLpfSharp)
 END_MESSAGE_MAP()
 
 
@@ -695,8 +700,8 @@ void CImageProcessingDoc::OnHistogram()
 {
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	// 히스토그램의값은0~255
- // 히스토그램의크기값을MAX=255로정규화하여출력
-// 히스트그램의크기: 256*256 지정
+	// 히스토그램의크기값을MAX=255로정규화하여출력
+	// 히스트그램의크기: 256*256 지정
 	int i, j, value;
 	unsigned char LOW, HIGH;
 	double MAX, MIN, DIF;
@@ -785,12 +790,11 @@ void CImageProcessingDoc::OnHistoEqual()
 	}
 }
 
-void CImageProcessingDoc::On32811()
+void CImageProcessingDoc::OnHistoSpec()
 {
-	/*
 	// TODO: 여기에 명령 처리기 코드를 추가합니다.
 	int i, value, Dvalue, top, bottom, DADD;
-	unsigned char* m_DTEMP, m_Sum_Of_ScHIST[256], m_TABLE[256];
+	unsigned char* m_DTEMP = nullptr, m_Sum_Of_ScHIST[256], m_TABLE[256];
 	unsigned char LOW, HIGH, Temp, * m_Org_Temp;
 	double m_DHIST[256], m_Sum_Of_DHIST[256], SUM = 0.0, DSUM = 0.0;
 	double DMAX, DMIN;
@@ -801,16 +805,15 @@ void CImageProcessingDoc::On32811()
 	m_Re_height = m_height;
 	m_Re_width = m_width;
 	m_Re_size = m_Re_height * m_Re_width;
-
 	m_OutputImage = new unsigned char[m_Re_size];
 	m_Org_Temp = new unsigned char[m_size];
 
 	CFile File;
 	CFileDialog OpenDlg(TRUE);
+
 	// 원하는 히스토그램이 있는 영상을 입력받음
 	if (OpenDlg.DoModal() == IDOK) {
-		File.Open(OpenDlg.GetFileName(), CFile::modeRead);
-
+		File.Open(OpenDlg.GetPathName(), CFile::modeRead);
 		if (File.GetLength() == (unsigned)m_size) {
 			m_DTEMP = new unsigned char[m_size];
 			File.Read(m_DTEMP, m_size);
@@ -822,10 +825,8 @@ void CImageProcessingDoc::On32811()
 			return;
 		}
 	}
-
 	LOW = 0;
 	HIGH = 255;
-
 	// 초기화
 	for (i = 0; i < 256; i++) {
 		m_HIST[i] = LOW;
@@ -839,7 +840,6 @@ void CImageProcessingDoc::On32811()
 		Dvalue = (int)m_DTEMP[i];
 		m_DHIST[Dvalue]++;
 	}
-
 	// 누적 히스토그램 조사
 	for (i = 0; i < 256; i++) {
 		SUM += m_HIST[i];
@@ -852,7 +852,6 @@ void CImageProcessingDoc::On32811()
 		Temp = m_InputImage[i];
 		m_Org_Temp[i] = (unsigned char)(m_Sum_Of_HIST[Temp] * HIGH / m_size);
 	}
-
 	// 누적 히스토그램에서 최소값과 최대값 지정
 	DMIN = m_Sum_Of_DHIST[0];
 	DMAX = m_Sum_Of_DHIST[255];
@@ -861,7 +860,6 @@ void CImageProcessingDoc::On32811()
 		m_Sum_Of_ScHIST[i] = (unsigned char)((m_Sum_Of_DHIST[i]
 			- DMIN) * HIGH / (DMAX - DMIN));
 	}
-
 	// 룩업테이블을 이용한 명세화
 	for (; ; ) {
 		for (i = m_Sum_Of_ScHIST[bottom];
@@ -870,14 +868,278 @@ void CImageProcessingDoc::On32811()
 		}
 		top = bottom;
 		bottom = bottom - 1;
-
 		if (bottom < -1)
 			break;
 	}
-
 	for (i = 0; i < m_size; i++) {
 		DADD = (int)m_Org_Temp[i];
 		m_OutputImage[i] = m_TABLE[DADD];
 	}
-	*/
+}
+
+
+void CImageProcessingDoc::OnEmbossing()
+{
+	// TODO: 여기에 구현 코드 추가.
+	int i, j;
+	double EmboMask[3][3] = { {-1., 0., 0.}, {0., 0., 0.}, {0., 0., 1.} };
+	// 마스크선택
+   // double EmboMask[3][3] = {{0., 0., 0.}, {0., 1., 0.}, {0., 0., 0.}};
+	// double EmboMask[3][3] = {{1., 1., 1.}, {1., -8.,1.}, {1., 1., 1.}};
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+	m_OutputImage = new unsigned char[m_Re_size];
+	m_tempImage = OnMaskProcess(m_InputImage, EmboMask);
+	// OnMaskProcess 함수를호출하여회선처리를한다.
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			if (m_tempImage[i][j] > 255.)
+				m_tempImage[i][j] = 255.;
+			if (m_tempImage[i][j] < 0.)
+				m_tempImage[i][j] = 0.;
+		}
+	} // 회선처리결과가0~255 사이값이되도록한다.
+	// m_tempImage = OnScale(m_tempImage, m_Re_height, m_Re_width);
+	// 정규화함수를사용할때
+	// 회선처리결과나정규화처리결과는2차원배열값이되므로
+	// 2차원배열을1차원배열로바꾸어출력하도록한다.
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			m_OutputImage[i * m_Re_width + j]
+				= (unsigned char)m_tempImage[i][j];
+		}
+	}
+}
+
+double** CImageProcessingDoc::OnMaskProcess(unsigned char* Target, double Mask[3][3])
+{
+	// TODO: 여기에 구현 코드 추가.
+	 // 회선처리가일어나는함수
+	int i, j, n, m;
+	double** tempInputImage, ** tempOutputImage, S = 0.0;
+	tempInputImage = Image2DMem(m_height + 2, m_width + 2);
+	// 입력값을위한메모리할당
+	tempOutputImage = Image2DMem(m_height, m_width);
+	// 출력값을위한메모리할당
+   // 1차원입력영상의값을2차원배열에할당한다.
+	for (i = 0; i < m_height; i++) {
+		for (j = 0; j < m_width; j++) {
+			tempInputImage[i + 1][j + 1]
+				= (double)Target[i * m_width + j];
+		}
+	}
+	// 회선연산
+	for (i = 0; i < m_height; i++) {
+		for (j = 0; j < m_width; j++) {
+			for (n = 0; n < 3; n++) {
+				for (m = 0; m < 3; m++) {
+					S += Mask[n][m] * tempInputImage[i + n][j + m];
+				}
+			} // 회선마스크의크기만큼이동하면서값을누적
+			tempOutputImage[i][j] = S; // 누적된값을출력메모리에저장
+			S = 0.0; // 다음블록으로이동하면누적값을초기화
+		}
+	}
+	return tempOutputImage; // 결과값반환
+}
+
+double** CImageProcessingDoc::OnScale(double** Target, int height, int width)
+{
+	// TODO: 여기에 구현 코드 추가.
+	// 정규화를위한함수
+	int i, j;
+	double min, max;
+	min = max = Target[0][0];
+	for (i = 0; i < height; i++) {
+		for (j = 0; j < width; j++) {
+			if (Target[i][j] <= min)
+				min = Target[i][j];
+		}
+	}
+	for (i = 0; i < height; i++) {
+		for (j = 0; j < width; j++) {
+			if (Target[i][j] >= max)
+				max = Target[i][j];
+		}
+	}
+	max = max - min;
+	for (i = 0; i < height; i++) {
+		for (j = 0; j < width; j++) {
+			Target[i][j] = (Target[i][j] - min) * (255. / max);
+		}
+	}
+	return Target;
+}
+
+double** CImageProcessingDoc::Image2DMem(int height, int width)
+{
+	// TODO: 여기에 구현 코드 추가.
+	// 2차원메모리할당을위한함수
+	double** temp;
+	int i, j;
+	temp = new double* [height];
+	for (i = 0; i < height; i++) {
+		temp[i] = new double[width];
+	}
+	for (i = 0; i < height; i++) {
+		for (j = 0; j < width; j++) {
+			temp[i][j] = 0.0;
+		}
+	} // 할당된2차원메모리를초기화
+	return temp;
+}
+
+void CImageProcessingDoc::OnBlurr()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	int i, j;
+	double BlurrMask[3][3] = { {1. / 9., 1. / 9., 1. / 9.},
+	{1. / 9., 1. / 9., 1. / 9.}, {1. / 9., 1. / 9., 1. / 9.} };
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+	m_OutputImage = new unsigned char[m_Re_size];
+	m_tempImage = OnMaskProcess(m_InputImage, BlurrMask);
+	// 블러링처리
+   // m_tempImage = OnScale(m_tempImage, m_Re_height, m_Re_width);
+	// 정규화
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			if (m_tempImage[i][j] > 255.)
+				m_tempImage[i][j] = 255.;
+			if (m_tempImage[i][j] < 0.)
+				m_tempImage[i][j] = 0.;
+		}
+	}
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			m_OutputImage[i * m_Re_width + j]
+				= (unsigned char)m_tempImage[i][j];
+		}
+	}
+}
+
+void CImageProcessingDoc::OnGaussianFilter()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	int i, j;
+	double GaussianMask[3][3] = { {1. / 16., 1. / 8., 1. / 16.},
+	{1. / 8., 1. / 4., 1. / 8.}, {1. / 16., 1. / 8., 1. / 16.} };
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+	m_OutputImage = new unsigned char[m_Re_size];
+	m_tempImage = OnMaskProcess(m_InputImage, GaussianMask);
+	// m_tempImage = OnScale(m_tempImage, m_Re_height, m_Re_width);
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			if (m_tempImage[i][j] > 255.)
+				m_tempImage[i][j] = 255.;
+			if (m_tempImage[i][j] < 0.)
+				m_tempImage[i][j] = 0.;
+		}
+	}
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			m_OutputImage[i * m_Re_width + j]
+				= (unsigned char)m_tempImage[i][j];
+		}
+	}
+}
+
+void CImageProcessingDoc::OnSharpening()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+
+	int i, j;
+	//double SharpeningMask[3][3] = {{-1., -1., -1.},{ -1., 9., -1. }, { -1., -1., -1. }};
+	double SharpeningMask[3][3] = { {0., -1., 0.}, {-1., 5.,-1.}, {0., -1., 0.} };
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+	m_OutputImage = new unsigned char[m_Re_size];
+	m_tempImage = OnMaskProcess(m_InputImage, SharpeningMask);
+	// m_tempImage = OnScale(m_tempImage, m_Re_height, m_Re_width);
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			if (m_tempImage[i][j] > 255.)
+				m_tempImage[i][j] = 255.;
+			if (m_tempImage[i][j] < 0.)
+				m_tempImage[i][j] = 0.;
+		}
+	}
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			m_OutputImage[i * m_Re_width + j]
+				= (unsigned char)m_tempImage[i][j];
+		}
+	}
+}
+
+void CImageProcessingDoc::OnHpfSharp()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	int i, j;
+	double HpfSharpMask[3][3] = { {-1. / 9., -1. / 9., -1. / 9.},
+	{-1. / 9., 8. / 9., -1. / 9.}, {-1. / 9., -1. / 9., -1. / 9.} };
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+	m_OutputImage = new unsigned char[m_Re_size];
+	m_tempImage = OnMaskProcess(m_InputImage, HpfSharpMask);
+	// m_tempImage = OnScale(m_tempImage, m_Re_height, m_Re_width);
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			if (m_tempImage[i][j] > 255.)
+				m_tempImage[i][j] = 255.;
+			if (m_tempImage[i][j] < 0.)
+				m_tempImage[i][j] = 0.;
+		}
+	}
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			m_OutputImage[i * m_Re_width + j]
+				= (unsigned char)m_tempImage[i][j];
+		}
+	}
+}
+
+void CImageProcessingDoc::OnLpfSharp()
+{
+	// TODO: 여기에 명령 처리기 코드를 추가합니다.
+	CConstantDlg dlg; // 상수를입력받으려고대화상자선언
+	int i, j, alpha;
+	double LpfSharpMask[3][3] = { {1. / 9., 1. / 9., 1. / 9.},
+	{1. / 9., 1. / 9., 1. / 9.}, {1. / 9., 1. / 9., 1. / 9.} };
+	m_Re_height = m_height;
+	m_Re_width = m_width;
+	m_Re_size = m_Re_height * m_Re_width;
+	m_OutputImage = new unsigned char[m_Re_size];
+	if (dlg.DoModal() == IDOK) {
+		alpha = (int)dlg.m_Constant;
+		// 대화상자를이용하여상수를입력받는다.
+	}
+	m_tempImage = OnMaskProcess(m_InputImage, LpfSharpMask);
+	for (i = 0; i < m_height; i++) {
+		for (j = 0; j < m_width; j++) {
+			m_tempImage[i][j] = (alpha * m_InputImage
+				[i * m_width + j]) - (unsigned char)m_tempImage[i][j];
+		}
+	}
+	// m_tempImage = OnScale(m_tempImage, m_Re_height, m_Re_width);
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			if (m_tempImage[i][j] > 255.)
+				m_tempImage[i][j] = 255.;
+			if (m_tempImage[i][j] < 0.)
+				m_tempImage[i][j] = 0.;
+		}
+	}
+	for (i = 0; i < m_Re_height; i++) {
+		for (j = 0; j < m_Re_width; j++) {
+			m_OutputImage[i * m_Re_width + j]
+				= (unsigned char)m_tempImage[i][j];
+		}
+	}
 }
